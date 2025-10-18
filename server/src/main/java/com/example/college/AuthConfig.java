@@ -13,7 +13,10 @@ public class AuthConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests((auth) -> auth.anyRequest().authenticated()
+            .cors(Customizer.withDefaults())
+            .authorizeHttpRequests((auth) -> auth
+            .requestMatchers("/students/**").permitAll()
+            .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults());
         return http.build();

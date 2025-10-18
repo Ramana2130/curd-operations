@@ -37,6 +37,8 @@ public class StudentService {
             Student students = exStu.get();
             students.setName(student.getName());
             students.setEmail(student.getEmail());
+            students.setRegister_number(student.getRegister_number());
+            students.setDepartment(student.getDepartment());
             return studentRepository.save(students);
         } else {
             throw new RuntimeException("Student not found");

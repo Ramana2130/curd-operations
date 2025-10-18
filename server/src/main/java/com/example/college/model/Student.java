@@ -19,8 +19,22 @@ public class Student {
     private String name;
     @Email(message = "Enter valid email")
     private String email;
+    private String register_number;
+    private String department;
     
     
+    public String getRegister_number() {
+        return register_number;
+    }
+    public void setRegister_number(String register_number) {
+        this.register_number = register_number;
+    }
+    public String getDepartment() {
+        return department;
+    }
+    public void setDepartment(String department) {
+        this.department = department;
+    }
     public Long getId() {
         return id;
     }

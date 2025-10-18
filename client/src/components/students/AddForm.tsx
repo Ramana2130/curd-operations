@@ -27,65 +27,43 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
+import { addStudent } from "@/services/studentservice";
 
 const formSchema = z.object({
   name: z.string().min(1),
-  register_number: z.number(),
+  register_number: z.string().min(1),
   email: z.string(),
   department: z.string(),
 });
 
 export default function AddForm() {
-  const languages = [
-    {
-      label: "English",
-      value: "en",
-    },
-    {
-      label: "French",
-      value: "fr",
-    },
-    {
-      label: "German",
-      value: "de",
-    },
-    {
-      label: "Spanish",
-      value: "es",
-    },
-    {
-      label: "Portuguese",
-      value: "pt",
-    },
-    {
-      label: "Russian",
-      value: "ru",
-    },
-    {
-      label: "Japanese",
-      value: "ja",
-    },
-    {
-      label: "Korean",
-      value: "ko",
-    },
-    {
-      label: "Chinese",
-      value: "zh",
-    },
-  ] as const;
+const departments = [
+  { label: "Information Technology", value: "it" },
+  { label: "Computer Science and Engineering", value: "cse" },
+  { label: "Electronics and Communication Engineering", value: "ece" },
+  { label: "Electrical and Electronics Engineering", value: "eee" },
+  { label: "Mechanical Engineering", value: "mech" },
+  { label: "Civil Engineering", value: "civil" },
+  { label: "Automobile Engineering", value: "auto" },
+  { label: "Biomedical Engineering", value: "bme" },
+  { label: "Chemical Engineering", value: "chem" },
+  { label: "Agricultural Engineering", value: "agri" },
+  { label: "Mechatronics Engineering", value: "mechatronics" },
+] as const;
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
+      const newStudent = await addStudent(values);
+      setTimeout(() => {
+        window.location.reload(); // refresh the page
+      }, 1500);
+      toast.success(`Student added: ${newStudent.name}`);
+      form.reset();
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
@@ -126,7 +104,7 @@ export default function AddForm() {
               <FormControl>
                 <Input
                   placeholder="Enter the register number"
-                  type="number"
+                  type="text"
                   {...field}
                 />
               </FormControl>
@@ -168,10 +146,10 @@ export default function AddForm() {
                       )}
                     >
                       {field.value
-                        ? languages.find(
-                            (language) => language.value === field.value
+                        ? departments.find(
+                            (department) => department.value === field.value
                           )?.label
-                        : "Select language"}
+                        : "Select department"}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
@@ -180,25 +158,25 @@ export default function AddForm() {
                   <Command>
                     <CommandInput placeholder="Search language..." />
                     <CommandList>
-                      <CommandEmpty>No language found.</CommandEmpty>
+                      <CommandEmpty>No department found.</CommandEmpty>
                       <CommandGroup>
-                        {languages.map((language) => (
+                        {departments.map((department) => (
                           <CommandItem
-                            value={language.label}
-                            key={language.value}
+                            value={department.label}
+                            key={department.value}
                             onSelect={() => {
-                              form.setValue("department", language.value);
+                              form.setValue("department", department.value);
                             }}
                           >
                             <Check
                               className={cn(
                                 "mr-2 h-4 w-4",
-                                language.value === field.value
+                                department.value === field.value
                                   ? "opacity-100"
                                   : "opacity-0"
                               )}
                             />
-                            {language.label}
+                            {department.label}
                           </CommandItem>
                         ))}
                       </CommandGroup>

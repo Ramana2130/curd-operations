@@ -35,56 +35,11 @@ import {
 } from "@/components/ui/table";
 import { AddDialog } from "./AddDialog";
 import { EditDialog } from "./EditDialog";
-import EditForm from "./EditForm";
 import { DeleteDialog } from "./DeleteDialog";
+import { getAllStudents, type Student } from "@/services/studentservice";
 
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    department: "computer science & Engineering",
-    name: "success",
-    email: "ken99@example.com",
-    registernumber: "727722EUIT123",
-  },
-  {
-    id: "3u1reuv4",
-    department: "Information Technology",
-    name: "success",
-    email: "Abe45@example.com",
-    registernumber: "727722EUIT123",
-  },
-  {
-    id: "derv1ws0",
-    department: "computer science & Engineering",
-    name: "processing",
-    email: "Monserrat44@example.com",
-    registernumber: "727722EUIT123",
-  },
-  {
-    id: "5kma53ae",
-    department: "Mechanical Engineering",
-    name: "success",
-    email: "Silas22@example.com",
-    registernumber: "727722EUIT123",
-  },
-  {
-    id: "bhqecj4p",
-    department: "Automobile Engineering",
-    name: "failed",
-    email: "carmella@example.com",
-    registernumber: "727722EUIT123",
-  },
-];
 
-export type Payment = {
-  id: string;
-  department: string;
-  name: "pending" | "processing" | "success" | "failed";
-  email: string;
-  registernumber: string;
-};
-
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Student>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -113,10 +68,10 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "registernumber",
+    accessorKey: "register_number",
     header: "Register Number",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("registernumber")}</div>
+      <div className="capitalize">{row.getValue("register_number")}</div>
     ),
   },
   {
@@ -146,7 +101,7 @@ export const columns: ColumnDef<Payment>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
+      const studentId = row.original.id?.toString() ?? "";
 
       return (
         <DropdownMenu>
@@ -159,7 +114,7 @@ export const columns: ColumnDef<Payment>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(studentId)}
             >
               Copy student Id
             </DropdownMenuItem>
@@ -174,6 +129,7 @@ export const columns: ColumnDef<Payment>[] = [
 ];
 
 export function DataTable() {
+  const [data, setData] = React.useState<Student[]>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -181,6 +137,14 @@ export function DataTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  React.useEffect(() => {
+    getAllStudents()
+    .then((response) => {
+      setData(response);
+    })
+    .catch((error) => console.log("Error fetching in getAll Students", error));
+  })
 
   const table = useReactTable({
     data,
