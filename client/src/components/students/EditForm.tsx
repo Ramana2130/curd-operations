@@ -35,7 +35,7 @@ const formSchema = z.object({
   department: z.string(),
 });
 
-export default function AddForm() {
+export default function EditForm() {
   const languages = [
     {
       label: "English",
@@ -212,7 +212,7 @@ export default function AddForm() {
           )}
         />
         <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-600">
-          Submit
+          Update
         </Button>
       </form>
     </Form>

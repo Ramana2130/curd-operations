@@ -4,19 +4,19 @@ import StudentPage from "@/pages/StudentPage";
 import { createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <LoginPage />
-    },
-    {
-        element: <MainLayout />,
-        children: [
-            {
-                path: "/students",
-                element: <StudentPage />
-            }
-        ]
-    },
-])
+  {
+    path: "/",
+    element: <LoginPage />,
+  },
+  {
+    element: <MainLayout />,
+    children: [
+      {
+        path: "/students",
+        element: <StudentPage />,
+      },
+    ],
+  },
+]);
 
 export default router;

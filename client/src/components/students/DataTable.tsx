@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -10,11 +10,11 @@ import {
   type SortingState,
   useReactTable,
   type VisibilityState,
-} from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+} from "@tanstack/react-table";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -23,8 +23,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -32,8 +32,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { AddDialog } from "./AddDialog"
+} from "@/components/ui/table";
+import { AddDialog } from "./AddDialog";
+import { EditDialog } from "./EditDialog";
+import EditForm from "./EditForm";
+import { DeleteDialog } from "./DeleteDialog";
 
 const data: Payment[] = [
   {
@@ -41,45 +44,45 @@ const data: Payment[] = [
     department: "computer science & Engineering",
     name: "success",
     email: "ken99@example.com",
-    registernumber: "727722EUIT123"
+    registernumber: "727722EUIT123",
   },
   {
     id: "3u1reuv4",
     department: "Information Technology",
     name: "success",
     email: "Abe45@example.com",
-    registernumber: "727722EUIT123"
+    registernumber: "727722EUIT123",
   },
   {
     id: "derv1ws0",
     department: "computer science & Engineering",
     name: "processing",
     email: "Monserrat44@example.com",
-    registernumber: "727722EUIT123"
+    registernumber: "727722EUIT123",
   },
   {
     id: "5kma53ae",
     department: "Mechanical Engineering",
     name: "success",
     email: "Silas22@example.com",
-    registernumber: "727722EUIT123"
+    registernumber: "727722EUIT123",
   },
   {
     id: "bhqecj4p",
     department: "Automobile Engineering",
     name: "failed",
     email: "carmella@example.com",
-    registernumber: "727722EUIT123"
+    registernumber: "727722EUIT123",
   },
-]
+];
 
 export type Payment = {
-  id: string
-  department: string
-  name: "pending" | "processing" | "success" | "failed"
-  email: string
-  registernumber: string
-}
+  id: string;
+  department: string;
+  name: "pending" | "processing" | "success" | "failed";
+  email: string;
+  registernumber: string;
+};
 
 export const columns: ColumnDef<Payment>[] = [
   {
@@ -107,16 +110,14 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "name",
     header: "name",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("name")}</div>
-    ),
+    cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "registernumber",
     header: "Register Number",
-    cell: ({row}) => (
+    cell: ({ row }) => (
       <div className="capitalize">{row.getValue("registernumber")}</div>
-    )
+    ),
   },
   {
     accessorKey: "email",
@@ -129,7 +130,7 @@ export const columns: ColumnDef<Payment>[] = [
           Email
           <ArrowUpDown />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
@@ -137,7 +138,7 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: "department",
     header: () => <div className="">department</div>,
     cell: ({ row }) => {
-      return <div className="">{row.getValue("department")}</div>
+      return <div className="">{row.getValue("department")}</div>;
     },
   },
   {
@@ -145,7 +146,7 @@ export const columns: ColumnDef<Payment>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original
+      const payment = row.original;
 
       return (
         <DropdownMenu>
@@ -160,26 +161,26 @@ export const columns: ColumnDef<Payment>[] = [
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(payment.id)}
             >
-              Copy payment ID
+              Copy student Id
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <EditDialog />
+            <DeleteDialog />
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];
 
 export function DataTable() {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
-  )
+  );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
@@ -198,7 +199,7 @@ export function DataTable() {
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
   return (
     <div className="w-full">
@@ -233,12 +234,12 @@ export function DataTable() {
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
-                )
+                );
               })}
           </DropdownMenuContent>
         </DropdownMenu>
         <div className="pl-3">
-        <AddDialog />
+          <AddDialog />
         </div>
       </div>
       <div className="overflow-hidden rounded-md border">
@@ -256,7 +257,7 @@ export function DataTable() {
                             header.getContext()
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -316,5 +317,5 @@ export function DataTable() {
         </div>
       </div>
     </div>
-  )
+  );
 }
