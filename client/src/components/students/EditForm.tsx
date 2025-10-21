@@ -27,65 +27,63 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
+import {  updateStudentById } from "../../services/studentService";
+import { DialogClose } from "../ui/dialog";
+
+interface EditFormProps {
+  student?: {
+    id: number;
+    name: string;
+    email: string;
+    registerNumber: string;
+    department: string;
+  };
+}
 
 const formSchema = z.object({
   name: z.string().min(1),
-  register_number: z.number(),
+  registerNumber: z.string().min(1),
   email: z.string(),
   department: z.string(),
 });
 
-export default function EditForm() {
-  const languages = [
-    {
-      label: "English",
-      value: "en",
-    },
-    {
-      label: "French",
-      value: "fr",
-    },
-    {
-      label: "German",
-      value: "de",
-    },
-    {
-      label: "Spanish",
-      value: "es",
-    },
-    {
-      label: "Portuguese",
-      value: "pt",
-    },
-    {
-      label: "Russian",
-      value: "ru",
-    },
-    {
-      label: "Japanese",
-      value: "ja",
-    },
-    {
-      label: "Korean",
-      value: "ko",
-    },
-    {
-      label: "Chinese",
-      value: "zh",
-    },
-  ] as const;
+export default function EditForm({student} : EditFormProps) {
+const departments = [
+  { label: "Information Technology", value: "Information Technology" },
+  { label: "Computer Science and Engineering", value: "Computer Science and Engineering" },
+  { label: "Electronics and Communication Engineering", value: "Electronics and Communication Engineering" },
+  { label: "Electrical and Electronics Engineering", value: "Electrical and Electronics Engineering" },
+  { label: "Mechanical Engineering", value: "Mechanical Engineering" },
+  { label: "Civil Engineering", value: "Civil Engineering" },
+  { label: "Automobile Engineering", value: "Automobile Engineering" },
+  { label: "Biomedical Engineering", value: "Biomedical Engineering" },
+  { label: "Chemical Engineering", value: "Chemical Engineering" },
+  { label: "Agricultural Engineering", value: "Agricultural Engineering" },
+  { label: "Mechatronics Engineering", value: "Mechatronics Engineering" },
+] as const;
+
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: student?.name || " ",
+      registerNumber: student?.registerNumber || " ",
+      email: student?.email || " ",
+      department: student?.department || " ",
+    }
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
+      if (!student?.id) {
+        toast.error("No student selected to update!");
+        return;
+      }
+      const updateStudent = await updateStudentById(student.id,values);
+      toast.success(`Student updated: ${updateStudent.name} successfully!`);
+      setTimeout(() => {
+        window.location.reload(); // refresh the page
+      }, 1500);
     } catch (error) {
       console.error("Form submission error", error);
       toast.error("Failed to submit the form. Please try again.");
@@ -119,14 +117,14 @@ export default function EditForm() {
 
         <FormField
           control={form.control}
-          name="register_number"
+          name="registerNumber"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Register Number</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Enter the register number"
-                  type="number"
+                  type="text"
                   {...field}
                 />
               </FormControl>
@@ -168,10 +166,10 @@ export default function EditForm() {
                       )}
                     >
                       {field.value
-                        ? languages.find(
-                            (language) => language.value === field.value
+                        ? departments.find(
+                            (department) => department.value === field.value
                           )?.label
-                        : "Select language"}
+                        : "Select department"}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
@@ -180,25 +178,25 @@ export default function EditForm() {
                   <Command>
                     <CommandInput placeholder="Search language..." />
                     <CommandList>
-                      <CommandEmpty>No language found.</CommandEmpty>
+                      <CommandEmpty>No department found.</CommandEmpty>
                       <CommandGroup>
-                        {languages.map((language) => (
+                        {departments.map((department) => (
                           <CommandItem
-                            value={language.label}
-                            key={language.value}
+                            value={department.label}
+                            key={department.value}
                             onSelect={() => {
-                              form.setValue("department", language.value);
+                              form.setValue("department", department.value);
                             }}
                           >
                             <Check
                               className={cn(
                                 "mr-2 h-4 w-4",
-                                language.value === field.value
+                                department.value === field.value
                                   ? "opacity-100"
                                   : "opacity-0"
                               )}
                             />
-                            {language.label}
+                            {department.label}
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -211,9 +209,9 @@ export default function EditForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-600">
-          Update
-        </Button>
+        <DialogClose type="submit" className="w-full bg-blue-700 hover:bg-blue-600 rounded p-2 text-white font-semibold">
+          Submit
+        </DialogClose>
       </form>
     </Form>
   );

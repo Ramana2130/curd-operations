@@ -18,7 +18,17 @@ public class StudentService {
     @Autowired
     private StudentRepository studentRepository;
 
-    public Student addStudent(Student student){
+    public Student addStudent(Student student) throws Exception{
+        String normalizedRegisterNumber = student.getRegisterNumber().toUpperCase();
+        Optional<Student> existingEmail = studentRepository.findByEmail(student.getEmail());
+        if(existingEmail.isPresent()){
+            throw new Exception("Email already exists");
+        }
+        Optional<Student> existingRegisterNumber = studentRepository.findByRegisterNumber(normalizedRegisterNumber);
+        if(existingRegisterNumber.isPresent()){
+            throw new Exception("Register Number already exists");
+        }
+        student.setRegisterNumber(normalizedRegisterNumber);
         return studentRepository.save(student);
     }
 
@@ -37,7 +47,7 @@ public class StudentService {
             Student students = exStu.get();
             students.setName(student.getName());
             students.setEmail(student.getEmail());
-            students.setRegister_number(student.getRegister_number());
+            students.setRegisterNumber(student.getRegisterNumber());
             students.setDepartment(student.getDepartment());
             return studentRepository.save(students);
         } else {

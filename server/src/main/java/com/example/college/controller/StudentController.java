@@ -1,6 +1,8 @@
 package com.example.college.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,12 +33,16 @@ public class StudentController {
     private StudentService studentService;
 
     @PostMapping("/add")
-    public ResponseEntity<Student> createStudent(@Valid @RequestBody Student student){
+    public ResponseEntity<?> createStudent(@Valid @RequestBody Student student){
+        Map<String, String> response = new HashMap<>();
         try {
             Student createStudent = studentService.addStudent(student);
-            return new ResponseEntity<>(createStudent, HttpStatus.CREATED);
+            response.put("message","Student added successfully");
+            response.put("studentId", String.valueOf(createStudent.getId()));
+            return ResponseEntity.status(201).body(response);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(400).body(response);
         }
     }
 

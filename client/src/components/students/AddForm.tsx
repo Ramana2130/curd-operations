@@ -27,29 +27,31 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { addStudent } from "@/services/studentservice";
+import { addStudent } from "../../services/studentService";
+import { DialogClose } from "../ui/dialog";
 
 const formSchema = z.object({
   name: z.string().min(1),
-  register_number: z.string().min(1),
+  registerNumber: z.string().min(1),
   email: z.string(),
   department: z.string(),
 });
 
 export default function AddForm() {
 const departments = [
-  { label: "Information Technology", value: "it" },
-  { label: "Computer Science and Engineering", value: "cse" },
-  { label: "Electronics and Communication Engineering", value: "ece" },
-  { label: "Electrical and Electronics Engineering", value: "eee" },
-  { label: "Mechanical Engineering", value: "mech" },
-  { label: "Civil Engineering", value: "civil" },
-  { label: "Automobile Engineering", value: "auto" },
-  { label: "Biomedical Engineering", value: "bme" },
-  { label: "Chemical Engineering", value: "chem" },
-  { label: "Agricultural Engineering", value: "agri" },
-  { label: "Mechatronics Engineering", value: "mechatronics" },
+  { label: "Information Technology", value: "Information Technology" },
+  { label: "Computer Science and Engineering", value: "Computer Science and Engineering" },
+  { label: "Electronics and Communication Engineering", value: "Electronics and Communication Engineering" },
+  { label: "Electrical and Electronics Engineering", value: "Electrical and Electronics Engineering" },
+  { label: "Mechanical Engineering", value: "Mechanical Engineering" },
+  { label: "Civil Engineering", value: "Civil Engineering" },
+  { label: "Automobile Engineering", value: "Automobile Engineering" },
+  { label: "Biomedical Engineering", value: "Biomedical Engineering" },
+  { label: "Chemical Engineering", value: "Chemical Engineering" },
+  { label: "Agricultural Engineering", value: "Agricultural Engineering" },
+  { label: "Mechatronics Engineering", value: "Mechatronics Engineering" },
 ] as const;
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,18 +59,20 @@ const departments = [
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(values);
       const newStudent = await addStudent(values);
       setTimeout(() => {
         window.location.reload(); // refresh the page
       }, 1500);
-      toast.success(`Student added: ${newStudent.name}`);
+      toast.success(`Student added: ${newStudent.name} successfully!`);
       form.reset();
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast.error("Failed to submit the form. Please try again.");
+    } catch (error: any) {
+      if(error.response?.data?.error){
+        toast.error(error.response.data.error);
+    }else{
+      toast.error("Failed to add student. Please try again.");
     }
   }
+}
 
   return (
     <Form {...form}>
@@ -97,7 +101,7 @@ const departments = [
 
         <FormField
           control={form.control}
-          name="register_number"
+          name="registerNumber"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Register Number</FormLabel>
@@ -189,9 +193,9 @@ const departments = [
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-600">
-          Submit
-        </Button>
+         <DialogClose type="submit" className="w-full bg-blue-700 hover:bg-blue-600 rounded p-2 text-white font-semibold">
+            Submit
+          </DialogClose>
       </form>
     </Form>
   );

@@ -11,7 +11,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, Clipboard, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -36,8 +36,15 @@ import {
 import { AddDialog } from "./AddDialog";
 import { EditDialog } from "./EditDialog";
 import { DeleteDialog } from "./DeleteDialog";
-import { getAllStudents, type Student } from "@/services/studentservice";
+import { getAllStudents} from "../../services/studentService";
 
+interface Student{
+    id?: number;
+    name: string;
+    email: string;
+    registerNumber: string;
+    department: string;
+} 
 
 export const columns: ColumnDef<Student>[] = [
   {
@@ -68,10 +75,10 @@ export const columns: ColumnDef<Student>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "register_number",
+    accessorKey: "registerNumber",
     header: "Register Number",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("register_number")}</div>
+      <div className="capitalize">{row.getValue("registerNumber")}</div>
     ),
   },
   {
@@ -101,7 +108,7 @@ export const columns: ColumnDef<Student>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const studentId = row.original.id?.toString() ?? "";
+      const studentId = row.original.registerNumber?.toString() ?? "";
 
       return (
         <DropdownMenu>
@@ -115,12 +122,13 @@ export const columns: ColumnDef<Student>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(studentId)}
+              className="flex justify-center"
             >
-              Copy student Id
+              <Clipboard /> RegisterNo
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <EditDialog />
-            <DeleteDialog />
+            <EditDialog student={row.original as Required<Student>} />
+            {row.original.id && <DeleteDialog StudentId={row.original.id} />}
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -142,9 +150,10 @@ export function DataTable() {
     getAllStudents()
     .then((response) => {
       setData(response);
+      console.log("Fetched Students:", response);
     })
     .catch((error) => console.log("Error fetching in getAll Students", error));
-  })
+  },[])
 
   const table = useReactTable({
     data,
